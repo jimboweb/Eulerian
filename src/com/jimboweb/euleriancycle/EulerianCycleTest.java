@@ -87,6 +87,7 @@ public class EulerianCycleTest {
             }
             Assert.assertTrue(getFailOutput(c,inputGraph,instance),testEulerianCycle(c, inputGraph));
             //Assert.assertTrue(getFailOutput(c,inputGraph, instance), instance.buildCycleOps < inputGraph.edges.size() * 2);
+            System.out.println("test passed");
         }
     }
 

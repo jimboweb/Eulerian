@@ -6,14 +6,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-// FIXME: 1/27/18 incorrect cycle on edge: 4 7
-//1 3
-//2 3
+// FIXME: 1/27/18 empty stack exception on input : 3 5
+//1 2
+//2 1
 //3 2
-//4 3
-//3 1
-//3 4
-//1 1
+//2 3
+//3 3
 
 
 
