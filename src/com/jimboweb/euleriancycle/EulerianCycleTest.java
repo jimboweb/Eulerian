@@ -80,7 +80,7 @@ public class EulerianCycleTest {
             } catch (ArrayIndexOutOfBoundsException err) {
                 System.out.println("Unconnected cycle");
                 continue;
-            } catch (IndexOutOfBoundsException e){
+            } catch (EmptyStackException e){
                 System.out.println(e);
                 System.out.println(e.getStackTrace());
                 Assert.fail(getFailOutput(c,inputGraph,instance));

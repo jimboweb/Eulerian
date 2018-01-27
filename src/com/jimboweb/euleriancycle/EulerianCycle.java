@@ -5,6 +5,21 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+// FIXME: 1/27/18 incorrect cycle on edge: 4 7
+//1 3
+//2 3
+//3 2
+//4 3
+//3 1
+//3 4
+//1 1
+
+
+
+
+
+
 /**
  *
  * @author jimstewart
@@ -147,16 +162,15 @@ public class EulerianCycle {
             while (edges[nextEdge].to!=edges[newCycle.getFirstEdgeOfNextCycle()].from){
                 ArrayList<Integer> unusedEdges = unusedEdgesFromEdge(nextEdge);
                 if(unusedEdges.size()>1){
-                    newCycle.setLastOpenEdge(nextEdge);
+                    newCycle.addOpenEdge(nextEdge);
                 }
-                int e=unusedEdges.get(0);
+                int e = unusedEdges.get(0);
                 nextEdge = e;
                 addEdgeToCycle(e,0,newCycle);
                 buildCycleOps++;//debug
             }
-            // FIXME: 1/26/18 this won't be called if there was a last unused edge but its edges got used up
-            if(newCycle.getLastOpenEdge()==-1 && unusedEdgesFromEdge(nextEdge).size()>0){
-                newCycle.setLastOpenEdge(nextEdge);
+            if(unusedEdgesFromEdge(nextEdge).size()>0){
+                newCycle.addOpenEdge(nextEdge);
             }
 
             return newCycle;
@@ -232,11 +246,12 @@ public class EulerianCycle {
         private ArrayList<Integer> edges;
         private boolean[] visited;
         private int graphSize;
-        private int lastOpenEdge = -1;
+        private Stack<Integer> openEdges;
         public Cycle(int graphSize){
             edges = new ArrayList<>();
             visited = new boolean[graphSize];
             this.graphSize=graphSize;
+            openEdges = new Stack<>();
         }
         //newCyclePreviousEdge is the LOCAL INDEX IN THIS CYCLE of the edge the next cycle starts from
         public Integer newCyclePreviousEdge;
@@ -254,13 +269,12 @@ public class EulerianCycle {
                 newCycle.setNewCyclePreviousEdge(-1);
                 return newCycle;
             }
-            int firstEdge = 0;
-            try {//debug
-                firstEdge = gr.unusedEdgesFromEdge(getLastOpenEdge()).get(0);
-            } catch (IndexOutOfBoundsException e){
-                System.out.println(e);
-            }
-            newCycle.setNewCyclePreviousEdge(edges.indexOf(getLastOpenEdge()));
+            int lastOpenEdge;
+            do{
+                lastOpenEdge = getLastOpenEdge();
+            } while (gr.unusedEdgesFromEdge(lastOpenEdge).size()<1);
+            int firstEdge = gr.unusedEdgesFromEdge(lastOpenEdge).get(0);
+            newCycle.setNewCyclePreviousEdge(edges.indexOf(lastOpenEdge));
             gr.addEdgeToCycle(firstEdge,0,newCycle);
             return newCycle;
         }
@@ -277,7 +291,16 @@ public class EulerianCycle {
                 List<Integer> appendCycle = otherCycle.edges.subList(prevEdge+1,otherCycle.edges.size());
                 appendCycle.addAll(otherCycle.edges.subList(0,prevEdge+1));
                 edges.addAll(appendCycle);
+                setOpenEdges(otherCycle.getOpenEdges());
             }
+        }
+
+        public void setOpenEdges(Stack<Integer> openEdges) {
+            this.openEdges = openEdges;
+        }
+
+        public Stack<Integer> getOpenEdges() {
+            return openEdges;
         }
 
         public Integer getNewCyclePreviousEdge() {
@@ -288,12 +311,12 @@ public class EulerianCycle {
             this.newCyclePreviousEdge = newCyclePreviousEdge;
         }
 
-        public int getLastOpenEdge() {
-            return lastOpenEdge;
+        public void addOpenEdge(int e){
+            openEdges.push(e);
         }
 
-        public void setLastOpenEdge(int lastOpenEdge) {
-            this.lastOpenEdge = lastOpenEdge;
+        public int getLastOpenEdge(){
+            return openEdges.pop();
         }
 
         public void addEdge(int e){
@@ -316,7 +339,7 @@ public class EulerianCycle {
         public Cycle copy(){
             Cycle c = new Cycle(graphSize);
             c.edges = new ArrayList<>(edges);
-            c.setLastOpenEdge(getLastOpenEdge());
+            c.setOpenEdges(getOpenEdges());
             return c;
         }
         public int[] outputAsArray(Graph graph){
