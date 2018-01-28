@@ -6,18 +6,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-// FIXME: 1/27/18 empty stack exception on input : 3 5
-//1 2
-//2 1
-//3 2
-//2 3
-//3 3
-
-
-
-
-
-
 /**
  *
  * @author jimstewart
@@ -289,7 +277,7 @@ public class EulerianCycle {
                 List<Integer> appendCycle = otherCycle.edges.subList(prevEdge+1,otherCycle.edges.size());
                 appendCycle.addAll(otherCycle.edges.subList(0,prevEdge+1));
                 edges.addAll(appendCycle);
-                setOpenEdges(otherCycle.getOpenEdges());
+                addAllOpenEdges(otherCycle.getOpenEdges());
             }
         }
 
@@ -311,6 +299,10 @@ public class EulerianCycle {
 
         public void addOpenEdge(int e){
             openEdges.push(e);
+        }
+
+        public void addAllOpenEdges(Stack<Integer> otherOpenEdges){
+            openEdges.addAll(otherOpenEdges);
         }
 
         public int getLastOpenEdge(){
