@@ -1,4 +1,4 @@
-//package com.jimboweb.euleriancycle;
+package com.jimboweb.euleriancycle;
 
 import java.io.IOException;
 import java.util.*;
@@ -12,10 +12,11 @@ import java.util.logging.Logger;
  */
 public class EulerianCycle {
 
-    private int addEdgeOps;
-    private int addNodeOps;
-    public int buildCycleOps;
-
+    public int isGraphEvenOps;
+    public int growCycleOps;
+    public int startNewCycleOps;
+    public int buildGraphOps;
+    public int addOrModifyNodesOps;
 
     public static void main(String[] args) {
         new Thread(null, new Runnable() {
@@ -109,6 +110,7 @@ public class EulerianCycle {
 
         public boolean isGraphEven(){
             for(Node n:nodes){
+                isGraphEvenOps++;
                 if (n.edgesIn.size()!=n.edgesOut.size()){
                     return false;
                 }
@@ -153,7 +155,7 @@ public class EulerianCycle {
                 int e = unusedEdges.get(0);
                 nextEdge = e;
                 addEdgeToCycle(e,0,newCycle);
-                buildCycleOps++;//debug
+                growCycleOps++;//debug
             }
             if(unusedEdgesFromEdge(nextEdge).size()>0){
                 newCycle.addOpenEdge(nextEdge);
@@ -198,30 +200,12 @@ public class EulerianCycle {
             unusedEdgesOut = new ArrayList<>();
             this.nodeNum = nodeNum;
         }
-        public void setNodeNum(int n){
-            nodeNum = n;
-        }
-        public int getNodeNum(){
-            return nodeNum;
-        }
         public void addEdgeIn(int n){
             edgesIn.add(n);
-        }
-        public int getEdgeIn(int n){
-            return edgesIn.get(n);
-        }
-        public ArrayList<Integer> getEdgesIn(){
-            return edgesIn;
         }
         public void addEdgeOut(int n){
             unusedEdgesOut.add(n);
             edgesOut.add(n);
-        }
-        public int getEdgeOut(int n){
-            return edgesOut.get(n);
-        }
-        public ArrayList<Integer> getEdgesOut(){
-            return edgesOut;
         }
         public void setEdgeUsed(int i){
             unusedEdgesOut.remove(i);
@@ -258,6 +242,7 @@ public class EulerianCycle {
             int lastOpenEdge;
             do{
                 lastOpenEdge = getLastOpenEdge();
+                startNewCycleOps++;
             } while (gr.unusedEdgesFromEdge(lastOpenEdge).size()<1);
             int firstEdge = gr.unusedEdgesFromEdge(lastOpenEdge).get(0);
             newCycle.setNewCyclePreviousEdge(edges.indexOf(lastOpenEdge));
@@ -374,7 +359,7 @@ public class EulerianCycle {
             Edge e = g.addEdge(edgeInd, from, to);
             edgesFromNode.get(from).add(edgeInd);
             edgesToNode.get(to).add(edgeInd);
-            addEdgeOps++; //debug
+            buildGraphOps++; //debug
             g.nodes = addOrModifyNodes(g.nodes,edgeInd,from,to);
         }
         return g;
@@ -382,7 +367,7 @@ public class EulerianCycle {
 
     private Node[] addOrModifyNodes(Node[] nodes, int edgeNum, int from, int to){
         Node nextNode;
-        addNodeOps++; //debug
+        addOrModifyNodesOps++; //debug
         if(nodes[from]!=null){
             nextNode = nodes[from];
         } else {
