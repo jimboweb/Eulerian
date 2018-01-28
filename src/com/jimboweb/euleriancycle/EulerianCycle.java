@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+// TODO: 1/28/18 I need to make the openEdges a local reference
 
 /**
  *
@@ -86,7 +87,9 @@ public class EulerianCycle {
             return e;
         }
 
-        public void addEdgeToCycle(int edgeGraphIndex, int edgeNodeIndex, Cycle c){
+        public void addEdgeToCycle(int edgeGraphIndex, int edgeNodeIndex, Cycle c){ //,boolean edgeIsOpen;
+            // TODO: 3: 1/28/18 add index of new edge to openEdges if it's open
+            // if (nodeIsOpen) openEdges.add(edges.size())
             c.addEdge(edgeGraphIndex);
             nodes[edges[edgeGraphIndex].from()].setEdgeUsed(edgeNodeIndex);
         }
@@ -145,15 +148,19 @@ public class EulerianCycle {
          * @return
          */
         Cycle growCycle(Cycle newCycle){
+            // TODO: 1/28/18 I think most of the changes I need to make are here
+            // this always returns edge 0. so I should be able to make variable nextEdgeNumber 0
+            // nextEdge = edges[newCycle[nextEdgeNumber]]
             int nextEdge = newCycle.getFirstEdgeOfNextCycle();
-            Node startNode = nodes[edges[nextEdge].from];
             while (edges[nextEdge].to!=edges[newCycle.getFirstEdgeOfNextCycle()].from){
                 ArrayList<Integer> unusedEdges = unusedEdgesFromEdge(nextEdge);
+                // TODO: 2: replace this with openEdges boolean = true
                 if(unusedEdges.size()>1){
                     newCycle.addOpenEdge(nextEdge);
                 }
                 int e = unusedEdges.get(0);
                 nextEdge = e;
+                //TODO: 1: addEdgeToCycle needs an 'open edge' boolean. When I add the edge I'll add its new edges index to openEdges
                 addEdgeToCycle(e,0,newCycle);
                 growCycleOps++;//debug
             }
@@ -216,6 +223,8 @@ public class EulerianCycle {
         private ArrayList<Integer> edges;
         private boolean[] visited;
         private int graphSize;
+        // TODO: 0: 1/28/18 have to change this to openEdgesLocalIndex
+        // every time I add to or get from it use local index
         private Stack<Integer> openEdges;
         public Cycle(int graphSize){
             edges = new ArrayList<>();
@@ -241,6 +250,9 @@ public class EulerianCycle {
             }
             int lastOpenEdge;
             do{
+                // TODO: 1/28/18 make this use local cycle reference
+                //lastOpenEdgeNumber = getLastOpenEdge();
+                //lastOpenEdge = edges.get(lastOpenEdgeNumber)
                 lastOpenEdge = getLastOpenEdge();
                 startNewCycleOps++;
             } while (gr.unusedEdgesFromEdge(lastOpenEdge).size()<1);
